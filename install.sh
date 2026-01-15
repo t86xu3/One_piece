@@ -22,6 +22,9 @@ NC='\033[0m' # No Color
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Get version
+VERSION=$(cat "$SCRIPT_DIR/VERSION" 2>/dev/null || echo "unknown")
+
 echo -e "${CYAN}"
 cat << "EOF"
     ⚓ ════════════════════════════════════════════════════════ ⚓
@@ -37,6 +40,7 @@ cat << "EOF"
 EOF
 echo -e "${NC}"
 
+echo -e "${PURPLE}                      Version: ${VERSION}${NC}\n"
 echo -e "${YELLOW}🏴‍☠️ Setting sail for the Grand Line...${NC}\n"
 
 # ============================================================
@@ -118,16 +122,30 @@ install_fonts() {
 }
 
 # ============================================================
-# Copy Shell Config
+# Setup Shell Config (Symlink)
 # ============================================================
-copy_shell_config() {
-    echo -e "\n${BLUE}📄 Setting up shell config...${NC}"
-    if [ -f "$HOME/.zshrc" ]; then
-        echo -e "${YELLOW}Backing up existing .zshrc to .zshrc.backup${NC}"
-        cp "$HOME/.zshrc" "$HOME/.zshrc.backup"
+setup_shell_config() {
+    echo -e "\n${BLUE}📄 Setting up shell config (symlink)...${NC}"
+
+    # Check if already symlinked correctly
+    if [ -L "$HOME/.zshrc" ] && [ "$(readlink "$HOME/.zshrc")" = "$SCRIPT_DIR/shell/.zshrc" ]; then
+        echo -e "${GREEN}✓ Shell config already symlinked${NC}"
+        return
     fi
-    cp "$SCRIPT_DIR/shell/.zshrc" "$HOME/.zshrc"
-    echo -e "${GREEN}✓ Shell config installed${NC}"
+
+    # Backup existing file (if not a symlink)
+    if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+        BACKUP_FILE="$HOME/.zshrc.backup.$(date +%Y%m%d%H%M%S)"
+        echo -e "${YELLOW}Backing up existing .zshrc to ${BACKUP_FILE}${NC}"
+        mv "$HOME/.zshrc" "$BACKUP_FILE"
+    elif [ -L "$HOME/.zshrc" ]; then
+        # Remove old symlink
+        rm "$HOME/.zshrc"
+    fi
+
+    # Create symlink
+    ln -s "$SCRIPT_DIR/shell/.zshrc" "$HOME/.zshrc"
+    echo -e "${GREEN}✓ Shell config symlinked${NC}"
 }
 
 # ============================================================
@@ -150,6 +168,44 @@ import_iterm2_settings() {
 }
 
 # ============================================================
+# Setup Claude Global Config (Symlink)
+# ============================================================
+setup_claude_config() {
+    echo -e "\n${BLUE}🤖 Setting up Claude global config...${NC}"
+
+    # Create .claude directory if not exists
+    mkdir -p "$HOME/.claude"
+
+    CLAUDE_MD="$HOME/.claude/CLAUDE.md"
+    SOURCE_MD="$SCRIPT_DIR/claude/CLAUDE.md"
+
+    # Check if source exists
+    if [ ! -f "$SOURCE_MD" ]; then
+        echo -e "${YELLOW}⚠ No Claude config in repo, skipping${NC}"
+        return
+    fi
+
+    # Check if already symlinked correctly
+    if [ -L "$CLAUDE_MD" ] && [ "$(readlink "$CLAUDE_MD")" = "$SOURCE_MD" ]; then
+        echo -e "${GREEN}✓ Claude config already symlinked${NC}"
+        return
+    fi
+
+    # Backup existing file (if not a symlink)
+    if [ -f "$CLAUDE_MD" ] && [ ! -L "$CLAUDE_MD" ]; then
+        BACKUP_FILE="$CLAUDE_MD.backup.$(date +%Y%m%d%H%M%S)"
+        echo -e "${YELLOW}Backing up existing CLAUDE.md to ${BACKUP_FILE}${NC}"
+        mv "$CLAUDE_MD" "$BACKUP_FILE"
+    elif [ -L "$CLAUDE_MD" ]; then
+        rm "$CLAUDE_MD"
+    fi
+
+    # Create symlink
+    ln -s "$SOURCE_MD" "$CLAUDE_MD"
+    echo -e "${GREEN}✓ Claude config symlinked${NC}"
+}
+
+# ============================================================
 # Main Installation
 # ============================================================
 main() {
@@ -159,7 +215,8 @@ main() {
     install_oh_my_zsh
     install_powerlevel9k
     install_fonts
-    copy_shell_config
+    setup_shell_config
+    setup_claude_config
     import_iterm2_settings
 
     echo -e "\n${CYAN}"
@@ -181,6 +238,9 @@ EOF
     echo -e "   2. In iTerm2 Preferences → Profiles → Text → Font"
     echo -e "      Select: ${CYAN}Hack Nerd Font${NC}"
     echo -e "   3. Enjoy your new terminal! 🎉\n"
+
+    echo -e "${PURPLE}📌 Installed version: ${VERSION}${NC}"
+    echo -e "${PURPLE}📁 Config location: ${SCRIPT_DIR}${NC}\n"
 }
 
 # Run main function
