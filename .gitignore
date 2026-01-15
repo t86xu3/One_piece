@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# Secrets (never commit these!)
+*.secret
+*.credentials
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
