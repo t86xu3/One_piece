@@ -35,6 +35,9 @@ One repo to rule them all. Clone it on any machine, run the install script, and 
 One_piece/
 ├── 🏴‍☠️ README.md          # You are here
 ├── ⚔️  install.sh          # One-click setup script
+├── 📋 VERSION             # Current version (semver)
+├── 📜 CHANGELOG.md        # Version history
+├── 🤖 CLAUDE.md           # AI assistant context
 │
 ├── 💻 iterm2/              # iTerm2 configurations
 │   └── com.googlecode.iterm2.plist
@@ -42,11 +45,14 @@ One_piece/
 ├── 🐚 shell/               # Shell configurations
 │   └── .zshrc              # Zsh config with Powerlevel9k
 │
+├── 🧠 claude/              # Global Claude settings
+│   └── CLAUDE.md           # 全局 AI 規則
+│
 ├── 🤖 mcp/                 # Model Context Protocol configs
 │   └── (coming soon)
 │
 ├── ⚡ skills/              # Custom skills & scripts
-│   └── (coming soon)
+│   └── sync-global-config.md
 │
 ├── 🔧 commands/            # Custom CLI commands
 │   └── (coming soon)
@@ -115,7 +121,8 @@ Zsh configuration featuring:
 *Coming soon* — AI assistant configurations and MCP server settings.
 
 ### ⚡ Skills
-*Coming soon* — Custom automation scripts and development skills.
+自動化腳本與 AI 行為規則：
+- **sync-global-config** - 自動詢問是否同步全局設定到此 repo
 
 ### 🔧 Commands
 *Coming soon* — Custom CLI commands and utilities.
@@ -157,11 +164,15 @@ cp ~/One_piece/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/
 
 ## 📜 Changelog
 
-### v1.0.0 - Initial Voyage
-- Added iTerm2 configuration
-- Added Zsh/Oh My Zsh setup
-- Added Powerlevel9k theme
-- Created one-click install script
+**Current Version:** `1.3.1`
+
+詳細版本紀錄請見 [CHANGELOG.md](./CHANGELOG.md)
+
+### Recent Updates
+- **v1.3.0** - 新增全局 Claude 設定、Context7 查詢規則
+- **v1.2.0** - 新增 sync-global-config skill
+- **v1.1.0** - Symlink 支援、版本管理系統
+- **v1.0.0** - Initial voyage 🚀
 
 ---
 

@@ -7,6 +7,15 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.3.1] - 2025-01-16
+
+### Changed
+- 更新 README.md 結構圖，加入新資料夾
+- Changelog 改為連結至 CHANGELOG.md
+- 更新 Skills 說明
+
+---
+
 ## [1.3.0] - 2025-01-16
 
 ### Added
