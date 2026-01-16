@@ -7,6 +7,22 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.3.2] - 2025-01-16
+
+### Added
+- 新增 `--claude-only` 選項：快速同步 Claude 設定
+- 新增 `--shell-only` 選項：只更新 shell 設定
+- 新增 `--iterm-only` 選項：只匯入 iTerm2 設定
+- 新增 `--sync` 選項：同步所有設定檔（不安裝軟體）
+- 新增 `--help` 選項：顯示使用說明
+
+### Fixed
+- 修復在 iTerm2 內執行 install.sh 會強制關閉終端的問題
+- 新增 `$TERM_PROGRAM` 偵測，若在 iTerm2 內執行則跳過自動匯入設定
+- 安裝結束時顯示手動匯入 iTerm2 設定的指令
+
+---
+
 ## [1.3.1] - 2025-01-16
 
 ### Changed

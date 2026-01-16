@@ -10,6 +10,26 @@
 
 set -e
 
+# ============================================================
+# Usage / Help
+# ============================================================
+show_help() {
+    echo "Usage: ./install.sh [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h       顯示此幫助訊息"
+    echo "  --claude-only    只更新 Claude 全局設定 (快速同步)"
+    echo "  --shell-only     只更新 shell 設定 (.zshrc)"
+    echo "  --iterm-only     只匯入 iTerm2 設定"
+    echo "  --sync           同步所有設定檔 (不安裝軟體)"
+    echo ""
+    echo "Examples:"
+    echo "  ./install.sh              # 完整安裝"
+    echo "  ./install.sh --claude-only # 快速同步 Claude 設定"
+    echo "  ./install.sh --sync       # 同步所有設定檔"
+    exit 0
+}
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -154,7 +174,18 @@ setup_shell_config() {
 import_iterm2_settings() {
     echo -e "\n${BLUE}⚙️  Importing iTerm2 settings...${NC}"
 
-    # Close iTerm2 if running
+    # Check if running inside iTerm2
+    if [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
+        echo -e "${YELLOW}⚠️  偵測到你正在 iTerm2 內執行此腳本${NC}"
+        echo -e "${YELLOW}   為避免終端被關閉，將跳過自動匯入 iTerm2 設定${NC}"
+        echo -e "${CYAN}   請在安裝完成後手動執行：${NC}"
+        echo -e "${CYAN}   cp ~/One_piece/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/${NC}"
+        echo -e "${CYAN}   然後重啟 iTerm2${NC}"
+        ITERM_SETTINGS_SKIPPED=true
+        return
+    fi
+
+    # Close iTerm2 if running (safe because we're not inside it)
     osascript -e 'quit app "iTerm"' 2>/dev/null || true
     sleep 1
 
@@ -206,9 +237,50 @@ setup_claude_config() {
 }
 
 # ============================================================
+# Quick Sync Functions (for --xxx-only flags)
+# ============================================================
+sync_claude_only() {
+    echo -e "${CYAN}⚓ ONE PIECE - Quick Sync: Claude Config${NC}\n"
+    setup_claude_config
+    echo -e "\n${GREEN}✓ Claude 設定同步完成！${NC}"
+    echo -e "${PURPLE}📁 Config: ${SCRIPT_DIR}/claude/CLAUDE.md${NC}\n"
+}
+
+sync_shell_only() {
+    echo -e "${CYAN}⚓ ONE PIECE - Quick Sync: Shell Config${NC}\n"
+    setup_shell_config
+    echo -e "\n${GREEN}✓ Shell 設定同步完成！${NC}"
+    echo -e "${YELLOW}請執行 source ~/.zshrc 或重新開啟終端${NC}\n"
+}
+
+sync_iterm_only() {
+    echo -e "${CYAN}⚓ ONE PIECE - Quick Sync: iTerm2 Settings${NC}\n"
+    ITERM_SETTINGS_SKIPPED=false
+    import_iterm2_settings
+    if [ "$ITERM_SETTINGS_SKIPPED" = false ]; then
+        echo -e "\n${GREEN}✓ iTerm2 設定同步完成！請重啟 iTerm2${NC}\n"
+    fi
+}
+
+sync_all_configs() {
+    echo -e "${CYAN}⚓ ONE PIECE - Sync All Configs${NC}\n"
+    ITERM_SETTINGS_SKIPPED=false
+    setup_shell_config
+    setup_claude_config
+    import_iterm2_settings
+    echo -e "\n${GREEN}✓ 所有設定同步完成！${NC}"
+    if [ "$ITERM_SETTINGS_SKIPPED" = true ]; then
+        echo -e "${YELLOW}⚠️  iTerm2 設定需手動匯入（見上方指令）${NC}"
+    fi
+    echo ""
+}
+
+# ============================================================
 # Main Installation
 # ============================================================
 main() {
+    ITERM_SETTINGS_SKIPPED=false
+
     check_os
     install_homebrew
     install_iterm2
@@ -217,7 +289,7 @@ main() {
     install_fonts
     setup_shell_config
     setup_claude_config
-    import_iterm2_settings
+    import_iterm2_settings  # 放最後，避免關閉終端影響其他設定
 
     echo -e "\n${CYAN}"
     cat << "EOF"
@@ -234,7 +306,13 @@ EOF
     echo -e "${NC}"
 
     echo -e "${YELLOW}📋 Post-installation steps:${NC}"
-    echo -e "   1. Restart iTerm2"
+    if [ "$ITERM_SETTINGS_SKIPPED" = true ]; then
+        echo -e "   ${RED}1. 匯入 iTerm2 設定（之前被跳過）：${NC}"
+        echo -e "      ${CYAN}cp ~/One_piece/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/${NC}"
+        echo -e "   2. 重啟 iTerm2"
+    else
+        echo -e "   1. Restart iTerm2"
+    fi
     echo -e "   2. In iTerm2 Preferences → Profiles → Text → Font"
     echo -e "      Select: ${CYAN}Hack Nerd Font${NC}"
     echo -e "   3. Enjoy your new terminal! 🎉\n"
@@ -243,5 +321,31 @@ EOF
     echo -e "${PURPLE}📁 Config location: ${SCRIPT_DIR}${NC}\n"
 }
 
-# Run main function
-main "$@"
+# ============================================================
+# Parse Arguments
+# ============================================================
+case "${1:-}" in
+    --help|-h)
+        show_help
+        ;;
+    --claude-only)
+        sync_claude_only
+        ;;
+    --shell-only)
+        sync_shell_only
+        ;;
+    --iterm-only)
+        sync_iterm_only
+        ;;
+    --sync)
+        sync_all_configs
+        ;;
+    "")
+        main
+        ;;
+    *)
+        echo -e "${RED}未知選項: $1${NC}"
+        echo "使用 --help 查看可用選項"
+        exit 1
+        ;;
+esac
