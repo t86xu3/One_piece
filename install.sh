@@ -237,11 +237,45 @@ setup_claude_config() {
 }
 
 # ============================================================
+# Setup Claude Commands (Symlink)
+# ============================================================
+setup_claude_commands() {
+    echo -e "\n${BLUE}⌨️  Setting up Claude commands...${NC}"
+
+    # Create commands directory if not exists
+    mkdir -p "$HOME/.claude/commands"
+
+    COMMANDS_DIR="$SCRIPT_DIR/commands"
+
+    # Check if source directory has any .md files
+    if ! ls "$COMMANDS_DIR"/*.md &>/dev/null; then
+        echo -e "${YELLOW}⚠ No commands in repo, skipping${NC}"
+        return
+    fi
+
+    # Symlink each command file
+    for cmd_file in "$COMMANDS_DIR"/*.md; do
+        cmd_name=$(basename "$cmd_file")
+        target="$HOME/.claude/commands/$cmd_name"
+
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$cmd_file" ]; then
+            echo -e "${GREEN}✓ Command '$cmd_name' already symlinked${NC}"
+        else
+            # Remove existing file/symlink
+            [ -e "$target" ] && rm "$target"
+            ln -s "$cmd_file" "$target"
+            echo -e "${GREEN}✓ Command '$cmd_name' symlinked${NC}"
+        fi
+    done
+}
+
+# ============================================================
 # Quick Sync Functions (for --xxx-only flags)
 # ============================================================
 sync_claude_only() {
     echo -e "${CYAN}⚓ ONE PIECE - Quick Sync: Claude Config${NC}\n"
     setup_claude_config
+    setup_claude_commands
     echo -e "\n${GREEN}✓ Claude 設定同步完成！${NC}"
     echo -e "${PURPLE}📁 Config: ${SCRIPT_DIR}/claude/CLAUDE.md${NC}\n"
 }
@@ -267,6 +301,7 @@ sync_all_configs() {
     ITERM_SETTINGS_SKIPPED=false
     setup_shell_config
     setup_claude_config
+    setup_claude_commands
     import_iterm2_settings
     echo -e "\n${GREEN}✓ 所有設定同步完成！${NC}"
     if [ "$ITERM_SETTINGS_SKIPPED" = true ]; then
@@ -289,6 +324,7 @@ main() {
     install_fonts
     setup_shell_config
     setup_claude_config
+    setup_claude_commands
     import_iterm2_settings  # 放最後，避免關閉終端影響其他設定
 
     echo -e "\n${CYAN}"

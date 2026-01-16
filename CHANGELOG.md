@@ -7,6 +7,15 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.4.0] - 2025-01-16
+
+### Added
+- 新增 `/update-dotfiles` 全局 command，可快速從 GitHub 同步設定
+- 新增 `setup_claude_commands()` 函數，自動 symlink commands 目錄
+- install.sh 現在會自動設定 `~/.claude/commands/` 的 symlink
+
+---
+
 ## [1.3.2] - 2025-01-16
 
 ### Added
