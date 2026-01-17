@@ -15,7 +15,7 @@
 - 預設使用**繁體中文**進行所有對話
 - 程式碼註解可使用英文（如果專案慣例如此）
 - 技術術語可保留英文原文，但解釋用中文
-- Commit message 和 PR 可依專案慣例決定語言
+- **Git commit message 和 PR 說明一律使用中文**
 
 ### 3. 本地 Git 檢查
 - 每次提交前檢查本地 git 狀態（`git status`）
@@ -30,6 +30,12 @@
   - `CHANGELOG.md`（如有重大變更）
   - Todo list（標記完成、新增下一步）
 - 這樣可以確保進度同步，避免重複工作或遺漏
+
+### 5. One_piece 版本檢查
+- **每次開啟新對話時**，自動檢查 `~/One_piece` 是否有遠端更新
+- 執行 `cd ~/One_piece && git fetch && git status` 檢查
+- 如果落後遠端，提醒用戶：「One_piece 有新版本，要更新嗎？(`git pull`)」
+- 用戶同意後執行 `git pull`
 
 ---
 

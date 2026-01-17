@@ -7,6 +7,14 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.4.1] - 2025-01-18
+
+### Added
+- 全局 CLAUDE.md 新增「One_piece 版本檢查」規則：每次開啟對話自動檢查遠端更新
+- Git commit message 和 PR 說明一律使用中文
+
+---
+
 ## [1.4.0] - 2025-01-16
 
 ### Added
