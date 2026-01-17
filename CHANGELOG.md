@@ -7,6 +7,13 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.4.2] - 2025-01-18
+
+### Changed
+- 改用 `git rev-list --count` 檢查遠端更新（更正規的做法）
+
+---
+
 ## [1.4.1] - 2025-01-18
 
 ### Added

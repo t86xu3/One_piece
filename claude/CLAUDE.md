@@ -33,8 +33,12 @@
 
 ### 5. One_piece 版本檢查
 - **每次開啟新對話時**，自動檢查 `~/One_piece` 是否有遠端更新
-- 執行 `cd ~/One_piece && git fetch && git status` 檢查
-- 如果落後遠端，提醒用戶：「One_piece 有新版本，要更新嗎？(`git pull`)」
+- 檢查方式：
+  ```bash
+  cd ~/One_piece && git fetch origin
+  BEHIND=$(git rev-list HEAD..origin/main --count)
+  ```
+- 如果 `$BEHIND > 0`，提醒用戶：「One_piece 落後遠端 N 個 commits，要更新嗎？」
 - 用戶同意後執行 `git pull`
 
 ---
