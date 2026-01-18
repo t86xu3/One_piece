@@ -7,6 +7,16 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.4.3] - 2026-01-18
+
+### Added
+- 新增「技術棧文檔維護」規則：新增技術時須更新 `docs/TECH_STACK.md`
+
+### Changed
+- Commit message 格式明確化：`類型: 描述`（如 `功能: 新增登入功能`）
+
+---
+
 ## [1.4.2] - 2025-01-18
 
 ### Changed
